@@ -5,6 +5,7 @@ pipeline {
         stage('Download') {
             steps {
                 sh 'rm -rf js'
+                sh 'rm -rf css'
                 sh 'mkdir js'
                 sh 'echo "not a artifact file" > js/build.js'
                 sh 'echo "artifact file" > js/build.min.js'
