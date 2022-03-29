@@ -1,24 +1,26 @@
-pipeline {
+pipeline{
     agent any
-    
+    tools { 
+        maven 'Apache Maven 3.6.3'
+    }
     stages {
-        stage('Download') {
+        stage('Build Maven') {
             steps {
-                sh 'rm -rf js'
-                sh 'rm -rf css'
-                sh 'mkdir js'
-                sh 'echo "not a artifact file" > js/build.js'
-                sh 'echo "artifact file" > js/build.min.js'
-                
-                sh 'mkdir css'
-                sh 'echo "not a artifact file" > css/build.css'
-                sh 'echo "artifact file" > css/build.min.css'
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'gittoken', url: 'https://github.com/Gautham-kukutla/jenkins-docker-example.git']]])
+                sh "mvn -Dmaven.test.failure.ignore=true clean package"
+
             }
         }
-    }
-    post {
-        always {
-            archiveArtifacts artifacts: '**/*.min.*', onlyIfSuccessful: true
-        }
-    }
-}
+        stage('Archive Artifacts') {
+          steps {  
+                   archiveArtifacts artifacts: '**/*.jAr',
+                   allowEmptyArchive: true,
+                   fingerprint: true,
+                   onlyIfSuccessful: true,
+                   caseSensitive: false,
+                   followSymlinks: false,
+                   excludes: "myfol/*"
+                  }
+              }
+         }
+  }
