@@ -1,20 +1,22 @@
 pipeline {
     agent any
-
+    
     stages {
-        stage('Test') {
+        stage('Download') {
             steps {
-                /* `make check` returns non-zero on test failures,
-                * using `true` to allow the Pipeline to continue nonetheless
-                */
-                sh 'make check || true' 
-                junit '**/target/*.jar' 
+                sh 'mkdir js'
+                sh 'echo "not a artifact file" > js/build.js'
+                sh 'echo "artifact file" > js/build.min.js'
+                
+                sh 'mkdir css'
+                sh 'echo "not a artifact file" > css/build.css'
+                sh 'echo "artifact file" > css/build.min.css'
             }
         }
     }
-        post {
+    post {
         always {
-            archiveArtifacts artifacts: '**/target/*.jar', onlyIfSuccessful: true
+            archiveArtifacts artifacts: '**/*.min.*', onlyIfSuccessful: true
         }
     }
 }
